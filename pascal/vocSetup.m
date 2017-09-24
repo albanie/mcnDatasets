@@ -3,7 +3,7 @@ function imdb = vocSetup(varargin)
 %
 % This script was sourced from the Matconvnet-fcn project, written by 
 % Sebastien Erhardt and Andrea Vedaldi:
-% https://github.com/vlfeat/matconvnet-fcnby Andrea Vedladi
+% https://github.com/vlfeat/matconvnet-fcn
 
 opts.edition = '07' ;
 opts.dataDir = fullfile('data','voc07') ;

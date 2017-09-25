@@ -14,3 +14,12 @@ Everingham, M., Van Gool, L., Williams, C. K., Winn, J., & Zisserman, A.
 (2010). The pascal visual object classes (voc) challenge. 
 International journal of computer vision, 88(2), 303-338.
 ```
+
+**MS Coco**: 
+
+```
+Lin, Tsung-Yi, Michael Maire, Serge Belongie, James Hays, Pietro Perona, 
+Deva Ramanan, Piotr Dollár, and C. Lawrence Zitnick. "Microsoft coco: 
+Common objects in context." In European conference on computer vision, pp. 
+740-755. Springer, Cham, 2014.
+```

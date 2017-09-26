@@ -37,106 +37,105 @@ function imdb = vocSetupAdditionalSegmentations(imdb, varargin)
 % Sebastien Erhardt and Andrea Vedaldi:
 % https://github.com/vlfeat/matconvnet-fcn
 
-opts.dataDir = 'data/voc12' ;
-opts.archiveDir = 'data/archives' ;
-opts.mergeMode = 2 ;
-opts.url = 'http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/semantic_contours/benchmark.tgz' ;
-opts = vl_argparse(opts, varargin) ;
+  opts.dataDir = 'data/voc12' ;
+  opts.archiveDir = 'data/archives' ;
+  opts.mergeMode = 2 ;
+  opts.url = ['http://www.eecs.berkeley.edu/Research/Projects/CS/vision/' ...
+               'grouping/semantic_contours/benchmark.tgz'] ;
+  opts = vl_argparse(opts, varargin) ;
 
-tempDir = fullfile(opts.dataDir, 'berkeley') ;
-haveData = exist(tempDir);
-if haveData
-  % for real?
-  files = dir(fullfile(opts.dataDir, 'berkeley', 'benchmark_RELEASE', 'dataset', 'cls', '*.mat')) ;
-  haveData = length(files) > 0 ;
-end
-
-if ~haveData
-  % Get Berkeley data
-  archivePath = fullfile(opts.archiveDir, 'berkeleyVoc12Segments.tar.gz') ;
-  if ~exist(archivePath)
-    fprintf('%s: downloading %s to %s [this may take a long time]\n', mfilename, opts.url, archivePath) ;
-    urlwrite(opts.url, archivePath) ;
+  tempDir = fullfile(opts.dataDir, 'berkeley') ;
+  haveData = exist(tempDir, 'dir') ;
+  if haveData
+    folder = fullfile(opts.dataDir, 'berkeley/benchmark_RELEASE/dataset/cls') ;
+    files = dir(fullfile(folder, '*.mat')) ; haveData = ~isempty(files) ;
   end
 
-  % Uncompress Berkeley data
-  mkdir(tempDir) ;
-  untar(archivePath, tempDir) ;
-end
-
-mkdir(fullfile(opts.dataDir, 'SegmentationClassExt')) ;
-mkdir(fullfile(opts.dataDir, 'SegmentationObjectExt')) ;
-
-% Update training data
-train = textread(fullfile(tempDir, 'benchmark_RELEASE', 'dataset', 'train.txt'), '%s','delimiter','\n') ;
-val = textread(fullfile(tempDir, 'benchmark_RELEASE', 'dataset', 'val.txt'), '%s','delimiter','\n') ;
-
-for i = 1:numel(imdb.images.id)
-  name = imdb.images.name{i} ;
-  isBT = any(find(strcmp(name, train))) ;
-  isBV = any(find(strcmp(name, val))) ;
-
-  isPT = imdb.images.segmentation(i) && imdb.images.set(i) == 1 ;
-  isPV = imdb.images.segmentation(i) && imdb.images.set(i) == 2 ;
-  isPX = imdb.images.segmentation(i) && imdb.images.set(i) == 3 ; % test
-
-  % now decide how to use this image
-  if ~(isBT || isBV || isPT || isPV || isPX)
-    % not an image with segmentations
-    continue ;
-  end
-
-  if isPX
-    isX = true ;
-    isT = false ;
-    isV = false ;
-  else
-    switch opts.mergeMode
-      case 1
-        isV = isPV ;
-      case 2
-        isV = isPV & ~isBT ;
-      case 3
-        isV = isPV & ~isBT & ~isBV ;
+  if ~haveData
+    % Get Berkeley data - it is not gzipped so save without the gz extension
+    % to avoid MATLAB choking
+    archivePath = fullfile(opts.archiveDir, 'berkeleyVoc12Segments.tar') ; 
+    if ~exist(archivePath, 'file')
+      msg = '%s: downloading %s to %s [this may take a long time]\n' ;
+      fprintf(msg, mfilename, opts.url, archivePath) ;
+      websave(archivePath, opts.url) ;
     end
-    isX = false ;
-    isT = ~isV ;
+    mkdir(tempDir) ; untar(archivePath, tempDir) ; % Uncompress Berkeley data
   end
 
-  % if this image is not in the berekeley data, copy it over
-  % from the PASCAL DATA as is, otherwise use Berkely annotation
-  for k = 1:2
-    if k == 1
-      dir1 = 'cls' ;
-      dir2 = 'SegmentationClass' ;
-      dir3 = 'SegmentationClassExt' ;
-      f = 'GTcls' ;
+  mkdir(fullfile(opts.dataDir, 'SegmentationClassExt')) ;
+  mkdir(fullfile(opts.dataDir, 'SegmentationObjectExt')) ;
+
+  % Update training data
+  base = fullfile(tempDir, 'benchmark_RELEASE', 'dataset') ;
+  train = textread(fullfile(base, 'train.txt'), '%s','delimiter','\n') ; %#ok
+  val = textread(fullfile(base, 'val.txt'), '%s','delimiter','\n') ; %#ok
+
+  for i = 1:numel(imdb.images.id)
+    name = imdb.images.name{i} ;
+    isBT = any(find(strcmp(name, train))) ;
+    isBV = any(find(strcmp(name, val))) ;
+
+    isPT = imdb.images.segmentation(i) && imdb.images.set(i) == 1 ;
+    isPV = imdb.images.segmentation(i) && imdb.images.set(i) == 2 ;
+    isPX = imdb.images.segmentation(i) && imdb.images.set(i) == 3 ; % test
+
+    % now decide how to use this image
+    if ~(isBT || isBV || isPT || isPV || isPX)
+      % not an image with segmentations
+      continue ;
+    end
+
+    if isPX
+      isX = true ;
+      isT = false ;
+      isV = false ;
     else
-      dir1 = 'inst' ;
-      dir2 = 'SegmentationObject' ;
-      dir3 = 'SegmentationObjectExt' ;
-      f = 'GTinst' ;
+      switch opts.mergeMode
+        case 1
+          isV = isPV ;
+        case 2
+          isV = isPV & ~isBT ;
+        case 3
+          isV = isPV & ~isBT & ~isBV ;
+      end
+      isX = false ;
+      isT = ~isV ;
     end
 
-    extPath = fullfile(tempDir, 'benchmark_RELEASE', 'dataset', dir1, [name '.mat']) ;
-    pngPath = fullfile(opts.dataDir, dir2, [name '.png']) ;
-    newPngPath = fullfile(opts.dataDir, dir3, [name '.png']) ;
-
-    if ~exist(newPngPath)
-      if imdb.images.segmentation(i)
-        copyfile(pngPath, newPngPath, 'f') ;
+    % if this image is not in the berekeley data, copy it over
+    % from the PASCAL DATA as is, otherwise use Berkely annotation
+    for k = 1:2
+      if k == 1
+        dir1 = 'cls' ;
+        dir2 = 'SegmentationClass' ;
+        dir3 = 'SegmentationClassExt' ;
+        f = 'GTcls' ;
       else
-        anno = load(extPath) ;
-        labels = anno.(f).Segmentation ;
-        imwrite(uint8(labels),newPngPath) ;
+        dir1 = 'inst' ;
+        dir2 = 'SegmentationObject' ;
+        dir3 = 'SegmentationObjectExt' ;
+        f = 'GTinst' ;
+      end
+
+      extPath = fullfile(tempDir, 'benchmark_RELEASE', 'dataset', dir1, [name '.mat']) ;
+      pngPath = fullfile(opts.dataDir, dir2, [name '.png']) ;
+      newPngPath = fullfile(opts.dataDir, dir3, [name '.png']) ;
+
+      if ~exist(newPngPath, 'file')
+        if imdb.images.segmentation(i)
+          copyfile(pngPath, newPngPath, 'f') ;
+        else
+          anno = load(extPath) ;
+          labels = anno.(f).Segmentation ;
+          imwrite(uint8(labels),newPngPath) ;
+        end
       end
     end
+    imdb.images.segmentation(i) = true ;
+    imdb.images.set(i) = isT + 2 * isV + 3 * isX ;
   end
 
-  imdb.images.segmentation(i) = true ;
-  imdb.images.set(i) = isT + 2 * isV + 3 * isX ;
-end
 
-
-imdb.paths.classSegmentation = fullfile(opts.dataDir, 'SegmentationClassExt', '%s.png') ;
-imdb.paths.objectSegmentation = fullfile(opts.dataDir, 'SegmentationObjectExt', '%s.png') ;
+  imdb.paths.classSegmentation = fullfile(opts.dataDir, 'SegmentationClassExt', '%s.png') ;
+  imdb.paths.objectSegmentation = fullfile(opts.dataDir, 'SegmentationObjectExt', '%s.png') ;

@@ -37,8 +37,19 @@ function imdb = cocoSetup(opts)
       testImdb = buildTestSet(opts, 'test', 3) ; 
       testDevImdb = buildTestSet(opts, 'test-dev', 4) ; 
       imdb = mergeImdbs(testImdb, testDevImdb) ; imdb.meta = testImdb.meta ;
-    otherwise
-      error('year %d not supported', opts.dataOpts.year) ;
+
+    case 2017
+      imdb.sets.name = {'train','val', 'test', 'test-dev'} ; 
+      imdb.sets.id = uint8([1 2 3 4]) ;
+      trainImdb = buildSet(opts, 'train', 1) ; 
+      valImdb = buildSet(opts, 'val', 2) ;
+      testImdb = buildTestSet(opts, 'test', 3) ; 
+      testDevImdb = buildTestSet(opts, 'test-dev', 4) ; 
+      imdb = mergeImdbs(trainImdb, valImdb) ;
+      imdb = mergeImdbs(imdb, testImdb) ;
+      imdb = mergeImdbs(imdb, testDevImdb) ; 
+      imdb.meta = trainImdb.meta ; % only one meta copy is needed
+    otherwise, error('year %d not supported', opts.dataOpts.year) ;
   end
 
 % -------------------------------------------------------------------------
@@ -46,6 +57,13 @@ function imdb = buildSet(opts, setName, setCode)
 % -------------------------------------------------------------------------
   annoFile = sprintf('instances_%s%d.json', setName, opts.dataOpts.year) ;
   annoPath = fullfile(opts.dataDir, 'annotations', annoFile) ;
+  if opts.dataOpts.year == 2017 && ismember(setName, {'train', 'val'})
+    archive = 'annotations_trainval2017d.zip' ; %slightly different in 2017
+  else
+    archive = sprintf('annotations_%s%d.zip', setName, opts.dataOpts.year) ;
+  end
+  archivePath = fullfile(fileparts(annoPath), archive) ;
+  fetch(annoPath, archivePath) ;
   fprintf('reading annotations from %s \n', annoPath) ;
   tmp = importdata(annoPath) ; cocoData = jsondecode(tmp{1}) ;
   imdb = getImageData(opts, cocoData, setName, setCode) ;
@@ -80,6 +98,10 @@ function imdb = buildTestSet(opts, setName, setCode)
 % -------------------------------------------------------------------------
   annoFile = sprintf('image_info_%s%d.json', setName, opts.dataOpts.year) ;
   annoPath = fullfile(opts.dataDir, 'annotations', annoFile) ;
+  fprintf('reading annotations from %s \n', annoPath) ;
+  archive = sprintf('image_info_test%d.zip', opts.dataOpts.year) ;
+  archivePath = fullfile(fileparts(annoPath), archive) ;
+  fetch(annoPath, archivePath) ;
   fprintf('reading annotations from %s \n', annoPath) ;
   tmp = importdata(annoPath) ; cocoData = jsondecode(tmp{1}) ;
   pos = regexp(setName, '-dev$') ; % trim -dev suffix if present
@@ -118,6 +140,20 @@ function imdb = mergeImdbs(imdb1, imdb2)
     imdb.annotations = imdb2.annotations ;
   else
     % pass 
+  end
+
+% -----------------------------------
+function fetch(annoPath, archivePath) 
+% -----------------------------------
+% Fetch data from coco server if required
+  if ~exist(annoPath, 'file')
+    if ~exist(archivePath, 'file')
+      base = 'http://images.cocodataset.org/annotations' ;
+      url = fullfile(base, archive) ;
+      fprintf('downloading %s from %s\n', archive, url) ;
+      websave(archivePath, url) ;
+    end
+    unzip(archivePath,fileparts(fileparts(archivePath))) ;
   end
 
 % -------------------------------------------------------------------------

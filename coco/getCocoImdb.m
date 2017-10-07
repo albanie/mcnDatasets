@@ -22,8 +22,10 @@ function imdb = cocoSetup(opts)
   opts.dataDir = fullfile(opts.dataOpts.dataRoot, 'mscoco') ;
   switch opts.dataOpts.year
     case 2014
-      imdb.sets.name = {'train', 'val', 'test'} ; imdb.sets.id = uint8([1 2 3]) ;
-      trainImdb = buildSet(opts, 'train', 1) ; valImdb = buildSet(opts, 'val', 2) ;
+      imdb.sets.name = {'train', 'val', 'test'} ; 
+      imdb.sets.id = uint8([1 2 3]) ;
+      trainImdb = buildSet(opts, 'train', 1) ; 
+      valImdb = buildSet(opts, 'val', 2) ;
       imdb = mergeImdbs(trainImdb, valImdb) ; % merge train and val
       if opts.imdbOpts.includeTest 
         testImdb = buildTestSet(opts, 'test', 3) ; 
@@ -39,7 +41,7 @@ function imdb = cocoSetup(opts)
       imdb = mergeImdbs(testImdb, testDevImdb) ; imdb.meta = testImdb.meta ;
 
     case 2017
-      imdb.sets.name = {'train','val', 'test', 'test-dev'} ; 
+      imdb.sets.name = {'train', 'val', 'test', 'test-dev'} ; 
       imdb.sets.id = uint8([1 2 3 4]) ;
       trainImdb = buildSet(opts, 'train', 1) ; 
       valImdb = buildSet(opts, 'val', 2) ;
@@ -99,7 +101,11 @@ function imdb = buildTestSet(opts, setName, setCode)
   annoFile = sprintf('image_info_%s%d.json', setName, opts.dataOpts.year) ;
   annoPath = fullfile(opts.dataDir, 'annotations', annoFile) ;
   fprintf('reading annotations from %s \n', annoPath) ;
-  archive = sprintf('image_info_test%d.zip', opts.dataOpts.year) ;
+  if contains(setName, 'dev')
+    archive = sprintf('image_info_test-dev%d.zip', opts.dataOpts.year) ;
+  else
+    archive = sprintf('image_info_test%d.zip', opts.dataOpts.year) ;
+  end
   archivePath = fullfile(fileparts(annoPath), archive) ;
   fetch(annoPath, archivePath) ;
   fprintf('reading annotations from %s \n', annoPath) ;

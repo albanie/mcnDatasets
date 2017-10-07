@@ -16,6 +16,9 @@ function imdb = getPascalYearImdb(dataDir, year, varargin)
 %   `includeSegmentation`:: true
 %    Include segmentation labels for the subset of labeled images.
 %
+%   `includeDevkit`:: false
+%    Include development kit code released with the challenge.
+%
 %   `includeDetection`:: true
 %    Include detection labels for the subset of labeled images.
 %
@@ -27,6 +30,7 @@ function imdb = getPascalYearImdb(dataDir, year, varargin)
 % Licensed under The MIT License [see LICENSE.md for details]
 
   opts.includeTest = false ;
+  opts.includeDevkit = false ;
   opts.includeDetection = true ;
   opts.includeSegmentation = true ;
   opts.vocAdditionalSegmentations = false ;
@@ -36,6 +40,7 @@ function imdb = getPascalYearImdb(dataDir, year, varargin)
   imdb = vocSetup('dataDir', dataDir, ...
     'edition', sprintf('%02d', year), ...
     'includeTest', opts.includeTest, ...
+    'includeDevkit', opts.includeDevkit, ...
     'includeSegmentation', opts.includeSegmentation, ...
     'includeDetection', opts.includeDetection) ;
 

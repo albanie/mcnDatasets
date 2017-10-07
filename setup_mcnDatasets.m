@@ -6,4 +6,4 @@ function setup_mcnDatasets()
 % Licensed under The MIT License [see LICENSE.md for details]
 
   root = fileparts(mfilename('fullpath')) ;
-  addpath(root, [root '/pascal'], [root '/coco']) ;
+  addpath(root, [root '/pascal'], [root '/pascal/helpers'], [root '/coco']) ;

@@ -26,10 +26,10 @@ function imdb = getCombinedPascalImdb(opts, varargin)
 % Licensed under The MIT License [see LICENSE.md for details]
 
   opts.includeDevkit = true ;
-  opts.excludeDifficult = false ;
   opts.includeDetection = true ;
+  opts.excludeDifficult = false ;
   opts.includeSegmentation = true ;
-  opts.vocAdditionalSegmentations = false ;
+  opts.vocAdditionalSegmentations = true ;
   opts = vl_argparse(opts, varargin) ;
 
   % Although the 2012 data can be used during training, only 
@@ -77,10 +77,11 @@ function imdb = loadImdb(opts)
                          'includeSegmentation', opts.includeSegmentation) ;
   dataDir12 = fullfile(opts.dataOpts.dataRoot, 'VOCdevkit2012', '2012') ;
   imdb12 = getPascalYearImdb(dataDir12, 12 , ...
-                         'includeTest', false, ... % download manually
-                         'includeDevkit', opts.includeDevkit, ...
-                         'includeDetection', opts.includeDetection, ...
-                         'includeSegmentation', opts.includeSegmentation) ;
+         'includeTest', false, ... % download manually
+         'includeDevkit', opts.includeDevkit, ...
+         'includeDetection', opts.includeDetection, ...
+         'includeSegmentation', opts.includeSegmentation, ...
+         'vocAdditionalSegmentations', opts.vocAdditionalSegmentations) ;
   imdb = combineImdbs(imdb07, imdb12, opts) ;
 
 % ------------------------------------------------
@@ -93,17 +94,26 @@ function imdb = combineImdbs(imdb07, imdb12, opts)
                       ones(1,numel(imdb12.images.name)) * 2012] ;
   imdb.images.classification = [imdb07.images.classification ...
                                 imdb12.images.classification] ;
+  imdb.images.segmentation = [imdb07.images.segmentation ...
+                                imdb12.images.segmentation] ;
 
+  % add individual image paths for backward compatibility
   paths = vertcat(repmat(imdb07.paths.image, numel(imdb07.images.name), 1), ...
                    repmat(imdb12.paths.image, numel(imdb12.images.name), 1)) ;
   imdb.images.paths = arrayfun(@(x) {paths(x,:)}, 1:size(paths, 1)) ;
 
+  % also include the paths from both years to handle optional extra segmentations
+  imdb.paths2007 = imdb07.paths ;
+  imdb.paths2012 = imdb12.paths ;
+
   % for consistency, store in Height-Width order
   imdb.images.imageSizes = arrayfun(@(x) {imageSizes([2 1],x)'}, ...
                                       1:size(imageSizes, 2)) ;
-  annot07 = loadAnnotations(imdb07, opts) ;
-  annot12 = loadAnnotations(imdb12, opts) ;
-  imdb.annotations = horzcat(annot07, annot12) ;
+  if opts.includeDetection
+    annot07 = loadAnnotations(imdb07, opts) ;
+    annot12 = loadAnnotations(imdb12, opts) ;
+    imdb.annotations = horzcat(annot07, annot12) ;
+  end
 
 % ------------------------------------------------
 function annotations = loadAnnotations(imdb, opts) 

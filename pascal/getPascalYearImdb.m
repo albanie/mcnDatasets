@@ -22,13 +22,18 @@ function imdb = getPascalYearImdb(dataDir, year, varargin)
 %   `includeDetection`:: true
 %    Include detection labels for the subset of labeled images.
 %
-%   `vocSetupAdditionalSegmentations`:: false
+%   `vocAdditionalSegmentations`:: false
 %    Download and setup extra segmentation data from the Berkeley dataset. Note
 %    that this is a large dataset, and downloading takes a long time.
+%
+%   `mergeMode`:: 2
+%    The procedure for merging the Pascal and Berkely train/val sets.  See
+%    vocSetupAdditionalSegmentations documentation for details on each mode.
 %
 % Copyright (C) 2017 Samuel Albanie 
 % Licensed under The MIT License [see LICENSE.md for details]
 
+  opts.mergeMode = 2 ; 
   opts.includeTest = false ;
   opts.includeDevkit = false ;
   opts.includeDetection = true ;
@@ -46,5 +51,6 @@ function imdb = getPascalYearImdb(dataDir, year, varargin)
 
   if opts.vocAdditionalSegmentations
     imdb = vocSetupAdditionalSegmentations(imdb, 'dataDir', dataDir, ...
-                                                  'dataDir', dataDir) ;
+                                                  'dataDir', dataDir, ...
+                                               'mergeMode', opts.mergeMode) ;
   end

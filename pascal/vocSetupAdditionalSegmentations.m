@@ -63,8 +63,10 @@ function imdb = vocSetupAdditionalSegmentations(imdb, varargin)
     mkdir(tempDir) ; untar(archivePath, tempDir) ; % Uncompress Berkeley data
   end
 
-  mkdir(fullfile(opts.dataDir, 'SegmentationClassExt')) ;
-  mkdir(fullfile(opts.dataDir, 'SegmentationObjectExt')) ;
+  classExtDir = fullfile(opts.dataDir, 'SegmentationClassExt') ;
+  objExtDir = fullfile(opts.dataDir, 'SegmentationObjectExt') ;
+  if ~exist(classExtDir, 'dir'), mkdir(classExtDir) ; end
+  if ~exist(objExtDir, 'dir'), mkdir(objExtDir) ; end
 
   % Update training data
   base = fullfile(tempDir, 'benchmark_RELEASE', 'dataset') ;

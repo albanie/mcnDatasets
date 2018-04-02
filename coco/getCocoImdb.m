@@ -1,13 +1,13 @@
 function imdb = getCocoImdb(opts)
-%GETCOCOIMDB coco imdb construction 
-%  IMDB = GETCOCOIMDB(OPTS) builds an image database for training and 
+%GETCOCOIMDB coco imdb construction
+%  IMDB = GETCOCOIMDB(OPTS) builds an image database for training and
 %  testing on the coco dataset
 %
-% Copyright (C) 2017 Samuel Albanie 
+% Copyright (C) 2017 Samuel Albanie
 % Licensed under The MIT License [see LICENSE.md for details]
 
   imdb = cocoSetup(opts) ;
-  classIds = 1:numel(imdb.meta.classes) ;  
+  classIds = 1:numel(imdb.meta.classes) ;
   imdb.classMap = containers.Map(imdb.meta.classes, classIds) ;
   imdb.images.ext = 'jpg' ;
   imdb.meta.sets = {'train', 'val', 'test'} ;
@@ -22,13 +22,13 @@ function imdb = cocoSetup(opts)
   opts.dataDir = fullfile(opts.dataOpts.dataRoot, 'mscoco') ;
   switch opts.dataOpts.year
     case 2014
-      imdb.sets.name = {'train', 'val', 'test'} ; 
+      imdb.sets.name = {'train', 'val', 'test'} ;
       imdb.sets.id = uint8([1 2 3]) ;
-      trainImdb = buildSet(opts, 'train', 1) ; 
+      trainImdb = buildSet(opts, 'train', 1) ;
       valImdb = buildSet(opts, 'val', 2) ;
       imdb = mergeImdbs(trainImdb, valImdb) ; % merge train and val
-      if opts.imdbOpts.includeTest 
-        testImdb = buildTestSet(opts, 'test', 3) ; 
+      if opts.imdbOpts.includeTest
+        testImdb = buildTestSet(opts, 'test', 3) ;
         imdb = mergeImdbs(imdb, testImdb) ;
       end
       imdb.meta = trainImdb.meta ; % only one meta copy is needed
@@ -36,20 +36,20 @@ function imdb = cocoSetup(opts)
     case 2015
       assert(opts.imdbOpts.includeTest == true, '2015 only has test images') ;
       imdb.sets.name = {'test', 'test-dev'} ; imdb.sets.id = uint8([3 4]) ;
-      testImdb = buildTestSet(opts, 'test', 3) ; 
-      testDevImdb = buildTestSet(opts, 'test-dev', 4) ; 
+      testImdb = buildTestSet(opts, 'test', 3) ;
+      testDevImdb = buildTestSet(opts, 'test-dev', 4) ;
       imdb = mergeImdbs(testImdb, testDevImdb) ; imdb.meta = testImdb.meta ;
 
     case 2017
-      imdb.sets.name = {'train', 'val', 'test', 'test-dev'} ; 
+      imdb.sets.name = {'train', 'val', 'test', 'test-dev'} ;
       imdb.sets.id = uint8([1 2 3 4]) ;
-      trainImdb = buildSet(opts, 'train', 1) ; 
+      trainImdb = buildSet(opts, 'train', 1) ;
       valImdb = buildSet(opts, 'val', 2) ;
-      testImdb = buildTestSet(opts, 'test', 3) ; 
-      testDevImdb = buildTestSet(opts, 'test-dev', 4) ; 
+      testImdb = buildTestSet(opts, 'test', 3) ;
+      testDevImdb = buildTestSet(opts, 'test-dev', 4) ;
       imdb = mergeImdbs(trainImdb, valImdb) ;
       imdb = mergeImdbs(imdb, testImdb) ;
-      imdb = mergeImdbs(imdb, testDevImdb) ; 
+      imdb = mergeImdbs(imdb, testDevImdb) ;
       imdb.meta = trainImdb.meta ; % only one meta copy is needed
     otherwise, error('year %d not supported', opts.dataOpts.year) ;
   end
@@ -87,7 +87,7 @@ function imdb = buildSet(opts, setName, setCode)
    if numel(anno_) > 0
      % store normalized boxes, rather than original pixel locations
      b = [anno_.bbox]' ; b = [b(:,1:2) b(:,1:2) + b(:,3:4)] ;
-     newAnno.boxes = single(bsxfun(@rdivide, b, [sz([2 1]) sz([2 1])])) ; 
+     newAnno.boxes = single(bsxfun(@rdivide, b, [sz([2 1]) sz([2 1])])) ;
    else
      newAnno.boxes = [] ;
    end
@@ -117,7 +117,7 @@ function imdb = buildTestSet(opts, setName, setCode)
   imdb.meta.supercategories = {cocoData.categories.supercategory} ;
 
 % -------------------------------------------------------------------------
-function imdb = getImageData(opts, cocoData, setName, setCode) 
+function imdb = getImageData(opts, cocoData, setName, setCode)
 % -------------------------------------------------------------------------
   imdb.images.name = {cocoData.images.file_name} ;
   imdb.images.id = [cocoData.images.id] ;
@@ -130,7 +130,7 @@ function imdb = getImageData(opts, cocoData, setName, setCode)
   imdb.images.paths = arrayfun(@(x) {paths(x,:)}, 1:size(paths,1)) ;
 
 % --------------------------------------
-function imdb = mergeImdbs(imdb1, imdb2) 
+function imdb = mergeImdbs(imdb1, imdb2)
 % --------------------------------------
   imdb.images.id = [imdb1.images.id imdb2.images.id] ;
   imdb.images.set = [imdb1.images.set imdb2.images.set] ;
@@ -140,16 +140,16 @@ function imdb = mergeImdbs(imdb1, imdb2)
 
   if isfield(imdb1, 'annotations') && isfield(imdb2, 'annotations')
     imdb.annotations = horzcat(imdb1.annotations, imdb2.annotations) ;
-  elseif isfield(imdb1, 'annotations') 
+  elseif isfield(imdb1, 'annotations')
     imdb.annotations = imdb1.annotations ;
-  elseif isfield(imdb2, 'annotations') 
+  elseif isfield(imdb2, 'annotations')
     imdb.annotations = imdb2.annotations ;
   else
-    % pass 
+    % pass
   end
 
 % -----------------------------------
-function fetch(annoPath, archivePath) 
+function fetch(annoPath, archivePath)
 % -----------------------------------
 % Fetch data from coco server if required
   if ~exist(annoPath, 'file')

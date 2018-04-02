@@ -26,7 +26,6 @@ statistics are as follows:
 | Totals   | 773   | 383 | 593  |
 
 The test set was extended from the previous version of AFEW to include examples
-from reality TV shows (there are no such examples in the training set).
-
-The baseilne performance reported by the challenge organisers with LBP-TOP
-features was `38.81%` on the val set and `40.47` on the test set.
+from reality TV shows (there are no such examples in the training set). The 
+baseilne performance reported by the challenge organisers with LBP-TOP
+features was `38.81%` on the val set and `40.47%` on the test set.

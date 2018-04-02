@@ -1,5 +1,5 @@
 function imdb = vocSetupAdditionalSegmentations(imdb, varargin)
-%VOCSETUPADDITIONALSEGMENTATIONS Download additional Berkeley seg data for VOC 12
+%VOCSETUPADDITIONALSEGMENTATIONS Download additional Berkeley data for VOC12
 %   IMDB = VOCSETUPADDITIONALSEGMENTATIONS(IMDB) downloads and setups
 %   Berkeley additional segmentations for the PASCAL VOC 2012 segmentation
 %   challenge data.
@@ -33,7 +33,7 @@ function imdb = vocSetupAdditionalSegmentations(imdb, varargin)
 %      X = PX  (the test set is uncahgend)
 %      T = (S \ V) \ X (the rest is training material)
 %
-% This script was sourced from the Matconvnet-fcn project, written by 
+% This script was sourced from the Matconvnet-fcn project, written by
 % Sebastien Erhardt and Andrea Vedaldi:
 % https://github.com/vlfeat/matconvnet-fcn
 
@@ -54,7 +54,7 @@ function imdb = vocSetupAdditionalSegmentations(imdb, varargin)
   if ~haveData
     % Get Berkeley data - it is not gzipped so save without the gz extension
     % to avoid MATLAB choking
-    archivePath = fullfile(opts.archiveDir, 'berkeleyVoc12Segments.tar') ; 
+    archivePath = fullfile(opts.archiveDir, 'berkeleyVoc12Segments.tar') ;
     if ~exist(archivePath, 'file')
       msg = '%s: downloading %s to %s [this may take a long time]\n' ;
       fprintf(msg, mfilename, opts.url, archivePath) ;
@@ -105,8 +105,8 @@ function imdb = vocSetupAdditionalSegmentations(imdb, varargin)
       isT = ~isV ;
     end
 
-    % if this image is not in the berekeley data, copy it over
-    % from the PASCAL DATA as is, otherwise use Berkely annotation
+    % if this image is not in the berkeley data, copy it over
+    % from the PASCAL DATA as is, otherwise use berkely annotation
     for k = 1:2
       if k == 1
         dir1 = 'cls' ;

@@ -74,13 +74,13 @@ function imdb = afewSetup(opts)
   imdb.tracks.paths = relPaths ;
   imdb.tracks.labels = labels ;
   imdb.tracks.labelsFerPlus = convertFerToFerPlus(labels, emotions) ;
-  imdb.images.set = subsetIdx ;
+  imdb.tracks.set = subsetIdx ;
   imdb.meta.classes = emotions ;
   imdb.meta.sets = subsets ;
 
   % check statistics against expected numbers
   msg = 'emotion statistics do not match expected numbers' ;
-  assert(sum(imdb.images.set == 1 & imdb.images.labels == 1) == 133, msg) ;
+  assert(sum(imdb.tracks.set == 1 & imdb.tracks.labels == 1) == 133, msg) ;
 
 % -------------------------------------------------------------------------
 function labels = convertFerToFerPlus(labels, ferEmotions)

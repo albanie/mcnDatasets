@@ -104,12 +104,13 @@ function imdb = afewSetup(opts)
   % remove empty frames if requested
   imdb.tracks.id = 1:numTracks ;
   if opts.dropTracksWithNoDets
-    fprint('removing empty face tracks....\n') ;
+    fprintf('removing empty face tracks....') ;
     keep = ~cellfun(@isempty, imdb.tracks.paths) ;
     fnames = {'vids', 'paths', 'labels', 'labelsFerPlus'} ;
     for ii = 1:numel(fnames)
       imdb.tracks.(fnames{ii}) = imdb.tracks.(fnames{ii})(keep) ;
     end
+    fprintf('done\n') ;
   end
 
 % -------------------------------------------------------------------------

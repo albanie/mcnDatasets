@@ -1,5 +1,5 @@
 function setup_mcnDatasets()
-%SETUP_MCNDATASETS Sets up mcnDatasets, by adding its folders 
+%SETUP_MCNDATASETS Sets up mcnDatasets, by adding its folders
 % to the Matlab path
 %
 % Copyright (C) 2017 Samuel Albanie
@@ -7,4 +7,4 @@ function setup_mcnDatasets()
 
   root = fileparts(mfilename('fullpath')) ;
   addpath(root, [root '/pascal'], [root '/pascal/helpers'], [root '/coco']) ;
-  addpath([root '/imagenet']) ;
+  addpath([root '/imagenet'], [root 'afew3.0') ;

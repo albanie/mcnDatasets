@@ -71,6 +71,7 @@ function imdb = afewSetup(opts)
 
   assert(counter - 1 == 383 + 773, 'unexpected number of tracks') ;
 
+  imdb.tracks.id = 1:numTracks ;
   imdb.tracks.paths = relPaths ;
   imdb.tracks.labels = labels ;
   imdb.tracks.labelsFerPlus = convertFerToFerPlus(labels, emotions) ;

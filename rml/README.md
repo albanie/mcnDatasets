@@ -5,33 +5,32 @@ This folder provides a function to construct an `imdb` for the rml emotion
 recognition dataset described in the following paper:
 
 ```
-@article{xie2013multimodal,
-  title={Multimodal information fusion of audio emotion recognition based on kernel entropy component analysis},
-  author={Xie, Zhibing and Guan, Ling},
-  journal={International Journal of Semantic Computing},
-  volume={7},
-  number={01},
-  pages={25--42},
-  year={2013},
-  publisher={World Scientific}
+
+@inproceedings{wang2004investigation,
+  title={An investigation of speech-based human emotion recognition},
+  author={Wang, Yongjin and Guan, Ling},
+  booktitle={Multimedia Signal Processing, 2004 IEEE 6th Workshop on},
+  pages={15--18},
+  year={2004},
+  organization={IEEE}
 }
+
+http://www.rml.ryerson.ca/rml-emotion-database.html
 ```
 
-This dataset was released as part of the Emotiw 2016 challenge.  The dataset
-statistics are as follows:
+We use the provided `rml-1` and `rml-2` splits for training and validation,
+which contain five and three speakers respectively.
 
-| Emotion  | Train | Val | Test |
-|----------|-------|-----|------|
-| Angry    | 133   | 64  | -    |
-| Disgust  | 74    | 40  | -    |
-| Fear     | 81    | 46  | -    |
-| Happy    | 150   | 63  | -    |
-| Neutral  | 144   | 63  | -    |
-| Sad      | 117   | 61  | -    |
-| Surprise | 74    | 46  | -    |
-| Totals   | 773   | 383 | 593  |
+The dataset statistics are as follows:
 
-The test set was extended from the previous version of AFEW to include examples
-from reality TV shows (there are no such examples in the training set). The 
-baseilne performance reported by the challenge organisers with LBP-TOP
-features was `38.81%` on the val set and `40.47%` on the test set.
+| Emotion  | Train | Val |
+|----------|-------|-----|
+| Angry    | 66    | 54  |
+| Disgust  | 67    | 53  |
+| Fear     | 67    | 53  |
+| Happy    | 73    | 47  |
+| Sad      | 66    | 54  |
+| Surprise | 68    | 52  |
+| Totals   | 407   | 313 |
+
+The average clip is `4.94` seconds long.

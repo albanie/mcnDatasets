@@ -54,14 +54,13 @@ Interaction (pp. 427-432). ACM.
 **RML**:
 
 ```
-@article{xie2013multimodal,
-  title={Multimodal information fusion of audio emotion recognition based on kernel entropy component analysis},
-  author={Xie, Zhibing and Guan, Ling},
-  journal={International Journal of Semantic Computing},
-  volume={7},
-  number={01},
-  pages={25--42},
-  year={2013},
-  publisher={World Scientific}
+@inproceedings{wang2004investigation,
+  title={An investigation of speech-based human emotion recognition},
+  author={Wang, Yongjin and Guan, Ling},
+  booktitle={Multimedia Signal Processing, 2004 IEEE 6th Workshop on},
+  pages={15--18},
+  year={2004},
+  organization={IEEE}
 }
 ```
+[link to paper](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1436403)

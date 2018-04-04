@@ -35,3 +35,33 @@ Emotiw 2016: Video and group-level emotion recognition challenges.
 In Proceedings of the 18th ACM International Conference on Multimodal
 Interaction (pp. 427-432). ACM.
 ```
+
+**enterface**:
+
+```
+@inproceedings{martin2006enterface,
+  titludio-visual emotion database},
+  author={Martin, Olivier and Kotsia, Irene and Macq, Benoit and Pitas, Ioannis},
+  booktitle={Data Engineering Workshops, 2006. Proceedings. 22nd International Conference on},
+  pages={8--8},
+  year={2006},
+  organization={IEEE}
+}
+```
+
+[link to paper](http://poseidon.csd.auth.gr/papers/PUBLISHED/CONFERENCE/pdf/Martin06a.pdf)
+
+**RML**:
+
+```
+@article{xie2013multimodal,
+  title={Multimodal information fusion of audio emotion recognition based on kernel entropy component analysis},
+  author={Xie, Zhibing and Guan, Ling},
+  journal={International Journal of Semantic Computing},
+  volume={7},
+  number={01},
+  pages={25--42},
+  year={2013},
+  publisher={World Scientific}
+}
+```

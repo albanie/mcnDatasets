@@ -77,7 +77,7 @@ function imdb = afewSetup(opts)
       vidName = sortedVids{jj} ;
       faceDir = fullfile(opts.dataDir, 'Faces', subset, vidName) ;
       paths = zs_getImgsInSubdirs(faceDir, 'jpg') ;
-      tails = cellfun(@(x) getTail(x, 2), paths, 'Uni', 0) ;
+      tails = cellfun(@(x) getTail(x, 4), paths, 'Uni', 0) ;
       relPaths{counter} = tails ;
       subsetIdx(counter) = ii ;
       labels(counter) = labelMaps{ii}(vidName) ;
@@ -101,17 +101,18 @@ function imdb = afewSetup(opts)
   msg = 'emotion statistics do not match expected numbers' ;
   assert(sum(imdb.tracks.set == 1 & imdb.tracks.labels == 1) == 133, msg) ;
 
-  % remove empty frames if requested
-  imdb.tracks.id = 1:numTracks ;
-  if opts.dropTracksWithNoDets
+  if opts.dropTracksWithNoDets % remove empty frames if requested
     fprintf('removing empty face tracks....') ;
     keep = ~cellfun(@isempty, imdb.tracks.paths) ;
+    numTracks = sum(keep) ;
     fnames = {'vids', 'paths', 'labels', 'labelsFerPlus'} ;
     for ii = 1:numel(fnames)
       imdb.tracks.(fnames{ii}) = imdb.tracks.(fnames{ii})(keep) ;
     end
     fprintf('done\n') ;
   end
+
+  imdb.tracks.id = 1:numTracks ;
 
 % -------------------------------------------------------------------------
 function labels = convertFerToFerPlus(labels, ferEmotions)

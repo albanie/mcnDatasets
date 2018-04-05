@@ -18,10 +18,11 @@ described in the following paper:
 The statistics in the version I have are as follows (these are slightly
 larger than the numbers reported in the publication):
 
-Subjects: 44, total vids: 1293
+This data     - Subjects: 44, total vids: 1293
+Original data - Subjects: 42, total vids: 1166
 
 I've chosen to arbitrarily assign subjects 1 - 30 as training, and 31 - 44
-as validation
+as validation.
 
 | Emotion  | All   | Val |
 |----------|-------|-----|
@@ -33,3 +34,7 @@ as validation
 | Surprise | 146   | 70  |
 
 | Totals   | 873   | 420 |
+
+Note that the original version of the dataset uses spaces in the directory names
+which can cause issues, so it's easier to swap them for hyphens before running
+the processing (e.g. `find . -name "* *" | rename 's/ /-/g'`).

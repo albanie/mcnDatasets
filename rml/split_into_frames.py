@@ -6,6 +6,7 @@ http://www.rml.ryerson.ca/rml-emotion-database.html
 import os
 import subprocess
 import glob
+from zsvision.zs_utils import get_img_paths_in_subdirs
 from os.path import join as pjoin
 
 # set as appropriate
@@ -33,7 +34,7 @@ def split_video(video_path, target_frame_dir, fps):
     return subprocess.call(command, shell=True)
 
 
-data_dir = os.path.expanduser('~/data//shared-datasets/rml')
+data_dir = os.path.expanduser('~/data/datasets/rml')
 frame_dir = pjoin(data_dir, 'frames')
 if not os.path.exists(frame_dir):
     os.makedirs(frame_dir)
@@ -41,11 +42,12 @@ if not os.path.exists(frame_dir):
 roots = glob.glob(pjoin(data_dir, '*'))
 
 for root_dir in roots:
+    num_base_tokens = len(root_dir.split('/'))
     subs = glob.glob(pjoin(root_dir, '*'))
     for sub in subs:
-        vids = glob.glob(pjoin(sub, '*.avi'))
+        vids = get_img_paths_in_subdirs(sub, suffix='avi')
         for vid in vids:
             tokens = vid.split('.')[0].split('/')
-            dest_dir = pjoin(frame_dir, '/'.join(tokens[-3:])) ;
+            dest_dir = pjoin(frame_dir, '/'.join(tokens[num_base_tokens-1:]))
             print('extracting {} to {}'.format(vid, dest_dir))
             split_video(vid, dest_dir, FPS)

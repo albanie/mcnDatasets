@@ -7,7 +7,7 @@ for common machine learning/computer vision datasets. Any additions/PRs welcome.
 References:
 ---
 
-**Pascal VOC**:
+**Pascal VOC**: [paper](https://link.springer.com/article/10.1007/s11263-009-0275-4)
 
 ```
 Everingham, M., Van Gool, L., Williams, C. K., Winn, J., & Zisserman, A.
@@ -15,9 +15,7 @@ Everingham, M., Van Gool, L., Williams, C. K., Winn, J., & Zisserman, A.
 International journal of computer vision, 88(2), 303-338.
 ```
 
-[paper](https://link.springer.com/article/10.1007/s11263-009-0275-4)
-
-**MS Coco**:
+**MS Coco**: [paper](https://arxiv.org/abs/1405.0312)
 
 ```
 Lin, Tsung-Yi, Michael Maire, Serge Belongie, James Hays, Pietro Perona,
@@ -26,12 +24,10 @@ Common objects in context." In European conference on computer vision, pp.
 740-755. Springer, Cham, 2014.
 ```
 
-[paper](https://arxiv.org/abs/1405.0312)
-
 Note that to use the coco imdb constructor, it is necessary to have the coco
 [Matlab API](https://github.com/cocodataset/cocoapi/tree/master/MatlabAPI) somewhere on your MATLAB path.
 
-**AFEW 3.0**:
+**AFEW 3.0**: [paper](https://dl.acm.org/citation.cfm?id=2997638)
 
 ```
 Dhall, A., Goecke, R., Joshi, J., Hoey, J., & Gedeon, T. (2016, October).
@@ -40,9 +36,7 @@ In Proceedings of the 18th ACM International Conference on Multimodal
 Interaction (pp. 427-432). ACM.
 ```
 
-[paper](https://dl.acm.org/citation.cfm?id=2997638)
-
-**enterface**:
+**enterface**: [paper](http://poseidon.csd.auth.gr/papers/PUBLISHED/CONFERENCE/pdf/Martin06a.pdf)
 
 ```
 @inproceedings{martin2006enterface,
@@ -55,9 +49,7 @@ Interaction (pp. 427-432). ACM.
 }
 ```
 
-[paper](http://poseidon.csd.auth.gr/papers/PUBLISHED/CONFERENCE/pdf/Martin06a.pdf)
-
-**RML**:
+**RML**: [paper](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1436403)
 
 ```
 @inproceedings{wang2004investigation,
@@ -69,4 +61,3 @@ Interaction (pp. 427-432). ACM.
   organization={IEEE}
 }
 ```
-[paper](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1436403)

@@ -8,3 +8,4 @@ function setup_mcnDatasets()
   root = fileparts(mfilename('fullpath')) ;
   addpath(root, [root '/pascal'], [root '/pascal/helpers'], [root '/coco']) ;
   addpath([root '/imagenet'], [root '/afew3.0'], [root '/rml']) ;
+  addpath([root '/enterface']) ;

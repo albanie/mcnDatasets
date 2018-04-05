@@ -8,6 +8,7 @@ import matplotlib
 matplotlib.use('Agg') # avoids backend bug
 
 import os
+import numpy as np
 import sys
 ar_path = os.path.expanduser('~/coding/libs/ar-imutils')
 sys.path.insert(0, ar_path)
@@ -39,6 +40,8 @@ ap.add_argument("--subset", default='Train', help="subset to process")
 ap.add_argument("--rml_frame_dir", default=rml_frame_dir, help="rml frame directory")
 ap.add_argument('--face-width', default=224, help='width of face')
 ap.add_argument('--align', action='store_true', default=False, help='align faces')
+ap.add_argument('--num_workers', default=1, type=int, help='number of workers')
+ap.add_argument('--worker_id', default=0, type=int, help='worker id')
 ap.add_argument('--debug', action='store_true',
                 default=False, help='run in debug mode')
 args = vars(ap.parse_args())
@@ -95,7 +98,9 @@ detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(args["shape_predictor"])
 fa = FaceAligner(predictor, desiredFaceWidth=args['face_width'])
 
-img_list = get_img_paths_in_subdirs(args['rml_frame_dir'])
+img_list = np.array(get_img_paths_in_subdirs(args['rml_frame_dir']))
+partitions = np.array_split(img_list, args['num_workers'])
+img_list = partitions[args['worker_id']]
 
 # store in the same structure as the provided Faces directory
 for img_path in tqdm(img_list):

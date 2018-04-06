@@ -8,6 +8,10 @@ function imdb = getAfewImdb(opts, varargin)
 %   `includeTest` :: false
 %    whether to include face tracks from the test set.
 %
+%   `subsampleStride` :: 0
+%    If set to be greater than zero, subsamples the faces at the given
+%    stride.
+%
 %   `dropTracksWithNoDets` :: false
 %    If true, will drop tracks with no detections (on all subsets). This
 %    is useful for develepmont with the provided faces, but should not be used
@@ -18,6 +22,7 @@ function imdb = getAfewImdb(opts, varargin)
 % Licensed under The MIT License [see LICENSE.md for details]
 
   opts.includeTest = false ;
+  opts.subsampleStride = 0 ;
   opts.dropTracksWithNoDets = false ;
   opts = vl_argparse(opts, varargin) ;
 
@@ -76,7 +81,25 @@ function imdb = afewSetup(opts)
       fprintf('processing %d/%d (%s)\n', jj, numel(sortedVids), subset) ;
       vidName = sortedVids{jj} ;
       faceDir = fullfile(opts.dataDir, 'Faces', subset, vidName) ;
-      paths = zs_getImgsInSubdirs(faceDir, 'jpg') ;
+      paths = sort(zs_getImgsInSubdirs(faceDir, 'jpg')) ;
+      if opts.subsampleStride && numel(paths) > 0
+        % assumes that the original frames were extracted at 25 fps
+        % and keeps all frames that are not contiguous
+        [~,fnames,~] = cellfun(@fileparts, paths, 'Uni', 0) ;
+        frameIdx = cellfun(@str2double, fnames) ;
+        contig = zeros(1, numel(frameIdx)-1) ;
+        prev = frameIdx(1) ;
+        for kk = 2:numel(frameIdx)
+          if frameIdx(kk) == prev + 1
+            contig(kk-1) = 1 ;
+          end
+          prev = frameIdx(kk) ;
+        end
+        splits = find(~contig) ;
+        ranges = arrayfun(@(x,y) {[x+1, y]}, [0 splits], [splits numel(frameIdx)]) ;
+        subsampled = cellfun(@(x) {[x(1):opts.subsampleStride:x(2)]}, ranges) ;
+        paths = paths([subsampled{:}]) ;
+      end
       tails = cellfun(@(x) getTail(x, 4), paths, 'Uni', 0) ;
       relPaths{counter} = tails ;
       subsetIdx(counter) = ii ;

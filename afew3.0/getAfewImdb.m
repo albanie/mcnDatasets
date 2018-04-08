@@ -12,6 +12,9 @@ function imdb = getAfewImdb(opts, varargin)
 %    If set to be greater than zero, subsamples the faces at the given
 %    stride.
 %
+%   `generateWavs` :: false
+%    whether to extract the audio track of each video into a separate wav file.
+%
 %   `dropTracksWithNoDets` :: false
 %    If true, will drop tracks with no detections (on all subsets). This
 %    is useful for develepmont with the provided faces, but should not be used
@@ -23,11 +26,13 @@ function imdb = getAfewImdb(opts, varargin)
 
   opts.includeTest = false ;
   opts.subsampleStride = 0 ;
+  opts.generateWavs = true ;
   opts.dropTracksWithNoDets = false ;
   opts = vl_argparse(opts, varargin) ;
 
   imdb = afewSetup(opts) ;
   imdb.images.ext = 'jpg' ;
+end
 
 % ------------------------------
 function imdb = afewSetup(opts)
@@ -48,7 +53,8 @@ function imdb = afewSetup(opts)
     fprintf('building label map for %s..\n', subsets{ii}) ;
     for jj = 1:numel(emotions)
       emo = emotions{jj} ;
-      paths = zs_getSubdirs(fullfile(opts.dataDir, subsets{ii}, emo)) ;
+      folder = fullfile(opts.dataDir, subsets{ii}, emo) ;
+      paths = zs_getImgsInDir(folder, 'avi') ;
       for kk = 1:numel(paths)
         [~,vidName,~] = fileparts(paths{kk}) ;
         msg = 'no track should be repeated in a single subset' ;
@@ -71,6 +77,10 @@ function imdb = afewSetup(opts)
   subsetIdx = zeros(1, numTracks) ;
   labels = zeros(1, numTracks) ;
   vidNames = cell(1, numTracks) ;
+  vidPaths = cell(1, numTracks) ;
+  if opts.generateWavs
+    wavPaths = cell(1, numTracks) ;
+  end
 
   counter = 1 ;
   sortedVidNames = cellfun(@(x) sort(x.keys()), labelMaps, 'uni', 0) ;
@@ -104,6 +114,16 @@ function imdb = afewSetup(opts)
       relPaths{counter} = tails ;
       subsetIdx(counter) = ii ;
       labels(counter) = labelMaps{ii}(vidName) ;
+
+			% store path to video and generate wav if requested
+			[base, vidId] = fileparts(strrep(faceDir, 'Faces/', '')) ;
+      vidBasePath = fullfile(base, emotions{labels(counter)}, vidId) ;
+			vidPath = [vidBasePath '.avi'] ;
+			assert(logical(exist(vidPath, 'file')), 'avi does not exist') ;
+			vidPaths{counter} = vidPath ;
+			if opts.generateWavs
+				wavPaths{counter} = extractAudio(vidBasePath) ;
+			end
       vidNames{counter} = vidName ;
       counter = counter + 1 ;
     end
@@ -114,11 +134,16 @@ function imdb = afewSetup(opts)
 
   imdb.tracks.vids = vidNames ;
   imdb.tracks.paths = relPaths ;
+  imdb.tracks.vidPaths = vidPaths ;
   imdb.tracks.labels = labels ;
   imdb.tracks.labelsFerPlus = convertFerToFerPlus(labels, emotions) ;
   imdb.tracks.set = subsetIdx ;
   imdb.meta.classes = emotions ;
   imdb.meta.sets = subsets ;
+
+  if opts.generateWavs
+    imdb.tracks.wavPaths = wavPaths ;
+  end
 
   % check statistics against expected numbers
   msg = 'emotion statistics do not match expected numbers' ;
@@ -128,7 +153,8 @@ function imdb = afewSetup(opts)
     fprintf('removing empty face tracks....') ;
     keep = ~cellfun(@isempty, imdb.tracks.paths) ;
     numTracks = sum(keep) ;
-    fnames = {'vids', 'paths', 'labels', 'labelsFerPlus'} ;
+    fnames = {'vids', 'paths', 'vidPaths', 'wavPaths', ...
+              'labels', 'labelsFerPlus'} ;
     for ii = 1:numel(fnames)
       imdb.tracks.(fnames{ii}) = imdb.tracks.(fnames{ii})(keep) ;
     end
@@ -136,6 +162,7 @@ function imdb = afewSetup(opts)
   end
 
   imdb.tracks.id = 1:numTracks ;
+end
 
 % -------------------------------------------------------------------------
 function labels = convertFerToFerPlus(labels, ferEmotions)
@@ -159,9 +186,25 @@ function labels = convertFerToFerPlus(labels, ferEmotions)
   msg = 'contempt should not exist in original labels' ;
   assert(~ismember(8, permuteMap), msg) ;
   labels = permuteMap(labels) ;
+end
 
 % ---------------------------------------
 function tail = getTail(path, numTokens)
 % ---------------------------------------
   tokens = strsplit(path, '/') ;
   tail = fullfile(tokens{end-numTokens+1:end}) ;
+end
+
+% -------------------------------------------------------------------------
+function destPath = extractAudio(vidBasePath)
+% -------------------------------------------------------------------------
+  srcPath = [vidBasePath '.avi'] ;
+  destPath = [vidBasePath '.wav'] ;
+  if ~exist(destPath, 'file')
+    ffmpegBin = '/users/albanie/local/bin/ffmpeg' ;
+    cmd = sprintf('%s -y -i %s -ac 1 -f wav -vn %s', ...
+                              ffmpegBin, srcPath, destPath) ;
+    status = system(cmd) ;
+    if status ~= 0, keyboard ; end
+  end
+end

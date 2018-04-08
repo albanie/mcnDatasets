@@ -6,8 +6,12 @@ function imdb = getRmlImdb(opts, varargin)
 % Copyright (C) 2018 Samuel Albanie
 % Licensed under The MIT License [see LICENSE.md for details]
 
+  opts.generateWavs = true ;
+  opts = vl_argparse(opts, varargin) ;
+
   imdb = rmlSetup(opts) ;
   imdb.images.ext = 'jpg' ;
+end
 
 % ------------------------------
 function imdb = rmlSetup(opts)
@@ -29,6 +33,10 @@ function imdb = rmlSetup(opts)
   vidNames = cell(1, numTracks) ;
   spIds = zeros(1, numTracks) ;
   subsetIdx = zeros(1, numTracks) ;
+  vidPaths = cell(1, numTracks) ;
+  if opts.generateWavs
+    wavPaths = cell(1, numTracks) ;
+  end
 
   % determine track labels
   counter = 1 ;
@@ -58,6 +66,16 @@ function imdb = rmlSetup(opts)
         subsetIdx(counter) = ii ;
         labels(counter) = label ;
         vidNames{counter} = vidName ;
+
+				% store path to video and generate wav if requested
+				vidBasePath = strrep(tracks{kk}, '/faces', '') ; % chop from path
+				vidPath = [vidBasePath '.avi'] ;
+				assert(logical(exist(vidPath, 'file')), 'avi does not exist') ;
+				vidPaths{counter} = vidPath ;
+				if opts.generateWavs
+					wavPaths{counter} = extractAudio(vidBasePath) ;
+				end
+
         spIds(counter) = find(strcmp(sp, [speakers{:}])) ;
         counter = counter + 1 ;
       end
@@ -68,6 +86,7 @@ function imdb = rmlSetup(opts)
   assert(counter == 721, 'unexpected number of tracks') ;
 
   imdb.tracks.vids = vidNames ;
+  imdb.tracks.vidPaths = vidPaths ;
   imdb.tracks.paths = relPaths ;
   imdb.tracks.labels = labels ;
   imdb.tracks.labelsFerPlus = convertFerToFerPlus(labels, emotions) ;
@@ -75,10 +94,29 @@ function imdb = rmlSetup(opts)
   imdb.meta.classes = emotions ;
   imdb.meta.sets = subsets ;
 
+  if opts.generateWavs
+    imdb.tracks.wavPaths = wavPaths ;
+  end
+
   % check statistics against expected numbers
   msg = 'emotion statistics do not match expected numbers' ;
   assert(sum(imdb.tracks.set == 1 & imdb.tracks.labels == 1) == 66, msg) ;
   imdb.tracks.id = 1:numTracks ;
+end
+
+% -------------------------------------------------------------------------
+function destPath = extractAudio(vidBasePath)
+% -------------------------------------------------------------------------
+  srcPath = [vidBasePath '.avi'] ;
+  destPath = [vidBasePath '.wav'] ;
+  if ~exist(destPath, 'file')
+    ffmpegBin = '/users/albanie/local/bin/ffmpeg' ;
+    cmd = sprintf('%s -i %s -vn -acodec copy %s', ...
+                              ffmpegBin, srcPath, destPath) ;
+    status = system(cmd) ;
+    if status ~= 0, keyboard ; end
+  end
+end
 
 % -------------------------------------------------------------------------
 function labels = convertFerToFerPlus(labels, ferEmotions)
@@ -102,9 +140,11 @@ function labels = convertFerToFerPlus(labels, ferEmotions)
   msg = 'contempt should not exist in original labels' ;
   assert(~ismember(8, permuteMap), msg) ;
   labels = permuteMap(labels) ;
+end
 
 % ---------------------------------------
 function tail = getTail(path, numTokens)
 % ---------------------------------------
   tokens = strsplit(path, '/') ;
   tail = fullfile(tokens{end-numTokens+1:end}) ;
+end

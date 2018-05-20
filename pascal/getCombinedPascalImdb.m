@@ -1,10 +1,10 @@
 function imdb = getCombinedPascalImdb(opts, varargin)
 % GETCOMBINEDPASCALIMDB - load Pascal IMDB file
-%   IMDB = GETCOMBINEDPASCALIMDB(OPTS) constructs an IMDB for the 
+%   IMDB = GETCOMBINEDPASCALIMDB(OPTS) constructs an IMDB for the
 %   Pascal VOC data spanning the 2007 and 2012 dataset (commonly referred
 %   to as the "0712" dataset in object detection.
 %
-%   GETCOMBINEDPASCALIMDBPASCALIMDB(..., 'option', value, ...) accepts 
+%   GETCOMBINEDPASCALIMDBPASCALIMDB(..., 'option', value, ...) accepts
 %   the following options:
 %
 %   `excludeDifficult`:: false
@@ -22,7 +22,7 @@ function imdb = getCombinedPascalImdb(opts, varargin)
 %   Inspiration ancestry for code:
 %      A.Vedaldi -> R.Girshick -> S.Albanie
 %
-% Copyright (C) 2017 Samuel Albanie 
+% Copyright (C) 2017 Samuel Albanie
 % Licensed under The MIT License [see LICENSE.md for details]
 
   opts.includeDevkit = true ;
@@ -32,32 +32,32 @@ function imdb = getCombinedPascalImdb(opts, varargin)
   opts.vocAdditionalSegmentations = true ;
   opts = vl_argparse(opts, varargin) ;
 
-  % Although the 2012 data can be used during training, only 
+  % Although the 2012 data can be used during training, only
   % the 2007 test data is used for evaluation
   opts.VOCRoot = fullfile(opts.dataOpts.dataRoot, 'VOCdevkit2007' ) ;
   opts.devkitCode = fullfile(opts.VOCRoot, 'VOCcode') ;
-  imdb = loadImdb(opts) ; 
+  imdb = loadImdb(opts) ;
   opts.pascalOpts = loadPascalOpts(opts) ;
 
   % add meta information (inlcuding background class)
   imdb.meta.classes = [{'background'} opts.pascalOpts.classes'] ;
-  classIds = 1:numel(imdb.meta.classes) ;  
+  classIds = 1:numel(imdb.meta.classes) ;
   imdb.classMap = containers.Map(imdb.meta.classes, classIds) ;
   imdb.images.ext = 'jpg' ;
   imdb.meta.sets = {'train', 'val', 'test'} ;
 
 %-----------------------------------------
-function pascalOpts = loadPascalOpts(opts) 
+function pascalOpts = loadPascalOpts(opts)
 %-----------------------------------------
 % LOADPASCALOPTS Load the pascal VOC database options
 %
-% NOTE: The Pascal VOC dataset has a number of directories 
-% and attributes. The paths to these directories are 
-% set using the VOCdevkit code. The VOCdevkit initialization 
-% code assumes it is being run from the devkit root folder, 
-% so we make a note of our current directory, change to the 
+% NOTE: The Pascal VOC dataset has a number of directories
+% and attributes. The paths to these directories are
+% set using the VOCdevkit code. The VOCdevkit initialization
+% code assumes it is being run from the devkit root folder,
+% so we make a note of our current directory, change to the
 % devkit root, initialize the pascal options and then change
-% back into our original directory 
+% back into our original directory
 
   % check the existence of the required folders
   assert(logical(exist(opts.VOCRoot, 'dir')), 'VOC root directory not found') ;
@@ -67,7 +67,7 @@ function pascalOpts = loadPascalOpts(opts)
   pascalOpts = VOCopts ; cd(currentDir) ;
 
 %-----------------------------
-function imdb = loadImdb(opts) 
+function imdb = loadImdb(opts)
 %-----------------------------
   dataDir07 = fullfile(opts.dataOpts.dataRoot, 'VOCdevkit2007', '2007') ;
   imdb07 = getPascalYearImdb(dataDir07, 07, ...
@@ -85,7 +85,7 @@ function imdb = loadImdb(opts)
   imdb = combineImdbs(imdb07, imdb12, opts) ;
 
 % ------------------------------------------------
-function imdb = combineImdbs(imdb07, imdb12, opts) 
+function imdb = combineImdbs(imdb07, imdb12, opts)
 % ------------------------------------------------
   imdb.images.name = [imdb07.images.name, imdb12.images.name] ;
   imdb.images.set = [imdb07.images.set imdb12.images.set] ;
@@ -116,7 +116,7 @@ function imdb = combineImdbs(imdb07, imdb12, opts)
   end
 
 % ------------------------------------------------
-function annotations = loadAnnotations(imdb, opts) 
+function annotations = loadAnnotations(imdb, opts)
 % ------------------------------------------------
   annotations = cell(1, numel(imdb.images.name)) ;
   for ii = 1:numel(imdb.images.name)

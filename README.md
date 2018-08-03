@@ -79,3 +79,17 @@ Interaction (pp. 427-432). ACM.
   organization={Springer}
 }
 ```
+
+*SFEW 2.0**: [paper](https://www.computer.org/csdl/mags/mu/2012/03/mmu2012030034.html)
+
+```
+@article{dhall2012collecting,
+  title={Collecting large, richly annotated facial-expression databases from movies},
+  author={Dhall, Abhinav and Goecke, Roland and Lucey, Simon and Gedeon, Tom and others},
+  journal={IEEE multimedia},
+  volume={19},
+  number={3},
+  pages={34--41},
+  year={2012}
+}
+```

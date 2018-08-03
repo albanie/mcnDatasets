@@ -1,8 +1,7 @@
 mcnDatasets
 ---
 
-This repo contains a collection of scripts to help with IMDB construction 
-for common machine learning/computer vision datasets. Any additions/PRs welcome.
+This repo contains a collection of scripts to help with IMDB construction for common machine learning/computer vision datasets. Any additions/PRs welcome.
 
 References:
 ---
@@ -10,9 +9,16 @@ References:
 **Pascal VOC**: [paper](https://link.springer.com/article/10.1007/s11263-009-0275-4)
 
 ```
-Everingham, M., Van Gool, L., Williams, C. K., Winn, J., & Zisserman, A.
-(2010). The pascal visual object classes (voc) challenge.
-International journal of computer vision, 88(2), 303-338.
+@article{everingham2010pascal,
+  title={The pascal visual object classes (voc) challenge},
+  author={Everingham, Mark and Van Gool, Luc and Williams, Christopher KI and Winn, John and Zisserman, Andrew},
+  journal={International journal of computer vision},
+  volume={88},
+  number={2},
+  pages={303--338},
+  year={2010},
+  publisher={Springer}
+}
 ```
 
 **MS Coco**: [paper](https://arxiv.org/abs/1405.0312)
@@ -24,8 +30,7 @@ Common objects in context." In European conference on computer vision, pp.
 740-755. Springer, Cham, 2014.
 ```
 
-Note that to use the coco imdb constructor, it is necessary to have the coco
-[Matlab API](https://github.com/cocodataset/cocoapi/tree/master/MatlabAPI) somewhere on your MATLAB path.
+Note that to use the coco imdb constructor, it is necessary to have the coco [Matlab API](https://github.com/cocodataset/cocoapi/tree/master/MatlabAPI) somewhere on your MATLAB path.
 
 **AFEW 3.0**: [paper](https://dl.acm.org/citation.cfm?id=2997638)
 
@@ -59,5 +64,18 @@ Interaction (pp. 427-432). ACM.
   pages={15--18},
   year={2004},
   organization={IEEE}
+}
+```
+
+**FER2013**: [paper](https://arxiv.org/pdf/1307.0414.pdf)
+
+```
+@inproceedings{goodfellow2013challenges,
+  title={Challenges in representation learning: A report on three machine learning contests},
+  author={Goodfellow, Ian J and Erhan, Dumitru and Carrier, Pierre Luc and Courville, Aaron and Mirza, Mehdi and Hamner, Ben and Cukierski, Will and Tang, Yichuan and Thaler, David and Lee, Dong-Hyun and others},
+  booktitle={International Conference on Neural Information Processing},
+  pages={117--124},
+  year={2013},
+  organization={Springer}
 }
 ```

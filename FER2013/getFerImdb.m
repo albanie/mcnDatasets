@@ -9,7 +9,6 @@ function imdb = getFerImdb(dataDir)
 
   rawFaceDims = [48 48 1] ;
   dataPath = fullfile(dataDir, 'fer2013.csv') ;
-
   if ~exist(dataPath, 'file')
     fetchDataset('fer2013', dataPath) ;
   end
@@ -25,12 +24,20 @@ function imdb = getFerImdb(dataDir)
     fprintf('extracting example %d/%d\n', ii, numRows) ;
     tokens = strsplit(csvData{ii}, ',') ;
     labels(ii) = str2double(tokens{1}) + 1 ; % labels need to be one-indexed
-    switch tokens{3}
-      case 'Training', setIdx = 1 ;
-      case 'PublicTest', setIdx = 2 ;
-      case 'PrivateTest', setIdx = 3 ;
-      otherwise, error('%s not recognised', tokens{3}) ;
+
+    % NOTE: we could use a switch/otherwise statement here, but the matlab
+    % code analyser sucks and throws a warning if it is used instead of
+    % if/else within a parfor, so we use the following hack:
+    setIdx = 0 ;
+    if strcmp(tokens{3}, 'Training')
+      setIdx = 1 ;
+    elseif strcmp(tokens{3}, 'PublicTest')
+      setIdx = 2 ;
+    elseif strcmp(tokens{3}, 'PrivateTest')
+      setIdx = 3 ;
     end
+    if ~ismember(setIdx, [1 2 3]), error('setIdx is unset') ; end
+
     subset(ii) = setIdx ;
     pixels = single(cellfun(@str2double, strsplit(tokens{2}, ' '))) ;
     face = reshape(pixels, rawFaceDims)' ;

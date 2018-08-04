@@ -80,6 +80,17 @@ Interaction (pp. 427-432). ACM.
 }
 ```
 
+**FER2013+**: [paper](https://arxiv.org/abs/1608.01041), [code](https://github.com/Microsoft/FERPlus)
+
+```
+@inproceedings{BarsoumICMI2016,
+    title={Training Deep Networks for Facial Expression Recognition with Crowd-Sourced Label Distribution},
+    author={Barsoum, Emad and Zhang, Cha and Canton Ferrer, Cristian and Zhang, Zhengyou},
+    booktitle={ACM International Conference on Multimodal Interaction (ICMI)},
+    year={2016}
+}
+```
+
 *SFEW 2.0**: [paper](https://www.computer.org/csdl/mags/mu/2012/03/mmu2012030034.html)
 
 ```

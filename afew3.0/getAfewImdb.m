@@ -19,7 +19,11 @@ function imdb = getAfewImdb(opts, varargin)
 %    If true, will drop tracks with no detections (on all subsets). This
 %    is useful for develepmont with the provided faces, but should not be used
 %    in an official evaluation (since it changes the number of examples in the
-%    validation and test sets).
+%    validation and test sets), or if it is used, you must apply a small
+%    adjustment factor to account for it. Alternatively, you can re-run a
+%    better face detector to ensure that every track has some detections.
+%    More precisely, dropping tracks reduces the validation set from 383
+%    samples to 381 samples (a 0.52% change).
 %
 % Copyright (C) 2018 Samuel Albanie
 % Licensed under The MIT License [see LICENSE.md for details]
@@ -154,7 +158,7 @@ function imdb = afewSetup(opts)
     keep = ~cellfun(@isempty, imdb.tracks.paths) ;
     numTracks = sum(keep) ;
     fnames = {'vids', 'paths', 'vidPaths', 'wavPaths', ...
-              'labels', 'labelsFerPlus'} ;
+              'labels', 'labelsFerPlus', 'set'} ;
     for ii = 1:numel(fnames)
       imdb.tracks.(fnames{ii}) = imdb.tracks.(fnames{ii})(keep) ;
     end
